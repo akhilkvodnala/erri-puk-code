@@ -1,0 +1,39 @@
+import { useEffect, useState } from "react";
+import api from "../utils/api";
+
+export default function Leads() {
+  const [leads, setLeads] = useState([]);
+  const [title, setTitle] = useState("");
+
+  useEffect(() => {
+    fetchLeads();
+  }, []);
+
+  const fetchLeads = async () => {
+    const res = await api.get("/get_leads");
+    setLeads(res.data);
+  };
+
+  const createLead = async () => {
+    await api.post("/create_leads", { title });
+    setTitle("");
+    fetchLeads();
+  };
+
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Leads</h1>
+      <input type="text" className="border p-2 my-2" placeholder="Lead Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <button className="bg-green-500 text-white p-2 ml-2" onClick={createLead}>Add Lead</button>
+
+      <ul className="mt-4">
+        {leads.map((lead) => (
+          <li key={lead.id} className="border p-2 my-2 flex justify-between">
+            {lead.title}
+            <button className="bg-red-500 text-white p-1">Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
